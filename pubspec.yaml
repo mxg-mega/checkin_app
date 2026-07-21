@@ -1,0 +1,94 @@
+name: checkin_app
+description: Company check-in / attendance app with GPS-verified clock in/out, overtime tracking, and admin dashboard.
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+
+  # --- Backend / Auth ---
+  supabase_flutter: ^2.5.6        # Supabase client: auth, db, realtime, edge function calls
+
+  # --- State management ---
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # --- Routing ---
+  go_router: ^14.2.0              # deep-linkable routes, works across mobile + PWA
+
+  # --- Location / GPS ---
+  geolocator: ^12.0.0             # cross-platform GPS position + permission handling
+  geolocator_web: ^4.0.0          # explicit web (PWA) location support
+  permission_handler: ^11.3.1     # runtime permission prompts (mobile)
+
+  # --- Local persistence / offline support ---
+  shared_preferences: ^2.2.3      # small key-value cache (last known state, theme, etc.)
+  hive_ce: ^2.10.0                # lightweight local db for offline queueing of clock events
+  hive_ce_flutter: ^2.2.0
+
+  # --- Networking ---
+  dio: ^5.5.0+1                   # HTTP client for Edge Function calls with interceptors/retry
+
+  # --- Forms / validation ---
+  flutter_hooks: ^0.20.5
+  hooks_riverpod: ^2.5.1
+
+  # --- Date / time handling ---
+  intl: ^0.19.0
+
+  # --- Charts (dashboard: hours worked, overtime trend) ---
+  fl_chart: ^0.68.0
+
+  # --- Reports / export ---
+  pdf: ^3.11.1                    # generate PDF attendance/hours reports
+  printing: ^5.13.1               # preview/share/print generated PDFs
+  csv: ^6.0.0                     # CSV export for admin reports
+  share_plus: ^9.0.0              # native share sheet for exported files (mobile)
+  file_saver: ^0.2.13             # cross-platform save-to-disk, incl. web/PWA downloads
+
+  # --- UI polish ---
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.10+1
+  shimmer: ^3.0.0                 # loading skeletons for dashboard
+
+  # --- Utilities ---
+  freezed_annotation: ^2.4.4      # immutable models + unions (e.g. AttendanceRecord, ClockResult)
+  json_annotation: ^4.9.0
+  uuid: ^4.4.2
+  connectivity_plus: ^6.0.3       # detect offline state before allowing clock attempt
+  logger: ^2.4.0
+
+  # --- PWA / responsive ---
+  responsive_framework: ^1.4.0    # adapt layout between phone and desktop-web dashboard use
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+  # --- Code generation ---
+  build_runner: ^2.4.11
+  freezed: ^2.5.5
+  json_serializable: ^6.8.0
+  riverpod_generator: ^2.4.0
+  hive_ce_generator: ^1.7.0
+
+flutter:
+  uses-material-design: true
+
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
+
+  # fonts:
+  #   - family: Inter
+  #     fonts:
+  #       - asset: assets/fonts/Inter-Regular.ttf
+  #       - asset: assets/fonts/Inter-Bold.ttf
+  #         weight: 700
