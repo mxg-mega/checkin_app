@@ -47,6 +47,27 @@
 			</array>
 		</dict>
 	</dict>
+	<!-- ═══════════════════════════════════════════════════════════════
+	     PERMISSION USAGE DESCRIPTIONS
+	     iOS requires a human-readable reason for each sensitive API.
+	     Without these keys the app will crash when requesting access.
+	     ═══════════════════════════════════════════════════════════════ -->
+
+	<!-- Location – GPS-verified clock in/out -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Check In uses your location to verify you are at the workplace when clocking in or out.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Check In uses your location in the background to complete clock-in verification even if the app is briefly minimised.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Check In uses your location in the background to complete clock-in verification even if the app is briefly minimised.</string>
+
+	<!-- Background modes – finish location acquisition when backgrounded -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>fetch</string>
+	</array>
+
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

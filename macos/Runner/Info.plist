@@ -28,5 +28,11 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+
+	<!-- Location – GPS-verified clock in/out (macOS desktop build) -->
+	<key>NSLocationUsageDescription</key>
+	<string>Check In uses your location to verify you are at the workplace when clocking in or out.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Check In uses your location to verify you are at the workplace when clocking in or out.</string>
 </dict>
 </plist>

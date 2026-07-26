@@ -1,4 +1,42 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PERMISSIONS
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- GPS – required for geofence-verified clock in/out -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Background location – needed if the user clocks in while app is
+         backgrounded or for future geofence monitoring.
+         NOTE: Google Play requires a prominent disclosure + user consent
+         before you can ship with this permission. -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- Internet – Supabase API calls, Edge Function invocations -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Network state – connectivity_plus uses this to detect offline mode -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Foreground service – keeps location acquisition alive while the
+         clock-in flow is in progress and the screen turns off -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
+    <!-- Notifications – clock reminders, shift-start alerts (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Vibrate – haptic feedback on successful clock in/out -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Wake lock – prevent CPU sleep during GPS acquisition -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Receive boot completed – restart geofence monitors after reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:label="checkin_app"
         android:name="${applicationName}"
