@@ -4,7 +4,9 @@
 // attendance_records directly. This is what actually enforces the
 // "hard lock" geofence rule server-side (the DB trigger is backup defense).
 
-import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
+// Use a more recent std version to avoid missing-module/type issues in some
+// environments. Update the version if your runtime requires a different one.
+import { serve } from "https://deno.land/std@0.201.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

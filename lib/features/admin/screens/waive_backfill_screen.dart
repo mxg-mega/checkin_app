@@ -7,6 +7,7 @@
 // Both funnel into hours_adjustments; the distinction is adjustment_type,
 // selected via the toggle at the top.
 
+import 'package:checkin_app/shared/widgets/app_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../admin_providers.dart';
@@ -44,6 +45,7 @@ class _WaiveBackfillScreenState extends ConsumerState<WaiveBackfillScreen> {
     final inProgress = ref.watch(adminActionInProgressProvider);
 
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Waive / Backfill Hours')),
       body: Padding(
         padding: const EdgeInsets.all(16),

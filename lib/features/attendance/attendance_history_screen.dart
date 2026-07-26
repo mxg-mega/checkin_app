@@ -1,12 +1,15 @@
 // lib/features/attendance/attendance_history_screen.dart
 
+import 'package:checkin_app/shared/widgets/app_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'attendance_history_repository.dart';
 
 final attendanceHistoryRepositoryProvider =
-    Provider<AttendanceHistoryRepository>((ref) => AttendanceHistoryRepository());
+    Provider<AttendanceHistoryRepository>(
+        (ref) => AttendanceHistoryRepository());
 
 final myAttendanceHistoryProvider =
     FutureProvider.autoDispose<List<AttendanceRecordView>>((ref) async {
@@ -22,7 +25,12 @@ class AttendanceHistoryScreen extends ConsumerWidget {
     final historyAsync = ref.watch(myAttendanceHistoryProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Attendance')),
+      drawer: const AppDrawer(),
+      appBar: AppBar(
+        title: const Text('My Attendance'),
+        leading: IconButton(
+            onPressed: () => context.pop(), icon: const Icon(Icons.arrow_back)),
+      ),
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(myAttendanceHistoryProvider),
         child: historyAsync.when(
@@ -45,10 +53,12 @@ class AttendanceHistoryScreen extends ConsumerWidget {
                     color: isClockIn ? Colors.green : Colors.redAccent,
                   ),
                   title: Text(isClockIn ? 'Clocked In' : 'Clocked Out'),
-                  subtitle: Text(DateFormat('EEE, MMM d · h:mm a').format(record.recordedAt)),
+                  subtitle: Text(DateFormat('EEE, MMM d · h:mm a')
+                      .format(record.recordedAt)),
                   trailing: isManual
                       ? Chip(
-                          label: const Text('Admin entry', style: TextStyle(fontSize: 11)),
+                          label: const Text('Admin entry',
+                              style: TextStyle(fontSize: 11)),
                           backgroundColor: Colors.blue.shade50,
                           visualDensity: VisualDensity.compact,
                         )

@@ -1,5 +1,6 @@
 // lib/features/admin/reports/reports_screen.dart
 
+import 'package:checkin_app/shared/widgets/app_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -30,6 +31,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     final dateFormat = DateFormat('MMM d, yyyy');
 
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Reports')),
       body: Padding(
         padding: const EdgeInsets.all(16),

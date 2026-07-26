@@ -60,6 +60,26 @@ class AppDrawer extends ConsumerWidget {
                     },
                   ),
                 ] else ...[
+                  // Admins are also employees who clock in/out themselves,
+                  // so they get both their own clock/attendance access AND
+                  // the admin-only tools below.
+                  ListTile(
+                    leading: const Icon(Icons.timer_outlined),
+                    title: const Text('Clock In / Out'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.go(AppRoutes.clock);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.history),
+                    title: const Text('My Attendance'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.go(AppRoutes.myAttendance);
+                    },
+                  ),
+                  const Divider(),
                   ListTile(
                     leading: const Icon(Icons.dashboard_outlined),
                     title: const Text('Dashboard'),
@@ -82,6 +102,14 @@ class AppDrawer extends ConsumerWidget {
                     onTap: () {
                       Navigator.pop(context);
                       context.go(AppRoutes.adminReports);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.location_on_outlined),
+                    title: const Text('Office Locations'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.go(AppRoutes.adminOfficeLocations);
                     },
                   ),
                 ],

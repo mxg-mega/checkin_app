@@ -22,6 +22,7 @@ import '../../features/clock/clock_screen.dart';
 import '../../features/attendance/attendance_history_screen.dart';
 import '../../features/admin/screens/waive_backfill_screen.dart';
 import '../../features/admin/reports/reports_screen.dart';
+import '../../features/admin/office_locations/office_locations_screen.dart';
 
 class AppRoutes {
   static const login = '/login';
@@ -30,6 +31,7 @@ class AppRoutes {
   static const adminDashboard = '/admin';
   static const adminWaiveBackfill = '/admin/waive-backfill';
   static const adminReports = '/admin/reports';
+  static const adminOfficeLocations = '/admin/office-locations';
   static const splash = '/splash';
 }
 
@@ -64,19 +66,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       return roleAsync.when(
         loading: () => AppRoutes.splash,
-        error: (_, __) => AppRoutes.login, // role lookup failed — treat as unauthenticated
+        error: (_, __) =>
+            AppRoutes.login, // role lookup failed — treat as unauthenticated
         data: (role) {
           if (role == null) return AppRoutes.login;
 
-          final isAdmin = role == AppUserRole.admin || role == AppUserRole.superAdmin;
+          final isAdmin =
+              role == AppUserRole.admin || role == AppUserRole.superAdmin;
           final onAdminRoute = state.matchedLocation.startsWith('/admin');
           final onSplashOrLogin =
               state.matchedLocation == AppRoutes.splash || goingToLogin;
 
-          // Employees must never land on admin routes.
+          // Employees must never land on admin routes — they have no
+          // dashboard access. Admins, however, are also employees who
+          // clock in/out themselves, so they're free to use /clock and
+          // /my-attendance too; only non-admins are restricted here.
           if (!isAdmin && onAdminRoute) return AppRoutes.clock;
 
           // Redirect away from splash/login once we know where they belong.
+          // Admins land on the dashboard by default after signing in, but
+          // can navigate to /clock afterward via the drawer.
           if (onSplashOrLogin) {
             return isAdmin ? AppRoutes.adminDashboard : AppRoutes.clock;
           }
@@ -118,6 +127,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.adminReports,
         builder: (context, state) => const ReportsScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.adminOfficeLocations,
+        builder: (context, state) => const OfficeLocationsScreen(),
+      ),
     ],
   );
 });
@@ -128,7 +141,9 @@ class _SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
+      body: Center(
+        child: Icon(Icons.fingerprint, size: 64),
+      ),
     );
   }
 }
