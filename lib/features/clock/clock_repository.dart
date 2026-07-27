@@ -5,8 +5,8 @@
 // is the single source of truth for the geofence hard-lock.
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../../core/api/supabase_client.dart';
-import '../../../../../core/location/location_service.dart';
+import '../../core/api/supabase_client.dart';
+import '../../core/location/location_service.dart';
 
 enum ClockEventType { clockIn, clockOut }
 
@@ -53,11 +53,89 @@ class ClockError extends ClockResult {
   const ClockError(this.message);
 }
 
+/// Represents whether the signed-in user is currently clocked in or out,
+/// derived from their most recent non-voided attendance_records row.
+enum LastClockStatus { clockedIn, clockedOut }
+
+sealed class LastClockStateResult {
+  const LastClockStateResult();
+}
+
+class LastClockStateLoaded extends LastClockStateResult {
+  final LastClockStatus status;
+  final DateTime? lastEventAt;
+  final bool isDanglingOvernight; // clocked in > 16h ago with no clock_out — likely forgotten
+
+  const LastClockStateLoaded({
+    required this.status,
+    required this.lastEventAt,
+    required this.isDanglingOvernight,
+  });
+}
+
+class LastClockStateError extends LastClockStateResult {
+  final String message;
+  const LastClockStateError(this.message);
+}
+
 class ClockRepository {
   final LocationService _locationService;
 
   ClockRepository({LocationService? locationService})
       : _locationService = locationService ?? LocationService();
+
+  /// Fetches the user's most recent attendance record (clock_in or clock_out)
+  /// to determine their current clock state. Call this on app startup / resume
+  /// so the UI shows the correct "Clock In" vs "Clock Out" button immediately,
+  /// rather than defaulting to an assumed state.
+  ///
+  /// Reads directly from attendance_records via the authenticated client —
+  /// this is a read-only query and RLS already restricts it to the caller's
+  /// own rows, so no Edge Function round-trip is needed here.
+  Future<LastClockStateResult> fetchLastClockState() async {
+    final userId = SupabaseService.currentUser?.id;
+    if (userId == null) {
+      return const LastClockStateError('No authenticated user.');
+    }
+
+    try {
+      final rows = await SupabaseService.client
+          .from('attendance_records')
+          .select('type, recorded_at')
+          .eq('user_id', userId)
+          .eq('is_voided', false)
+          .order('recorded_at', ascending: false)
+          .limit(1);
+
+      if (rows.isEmpty) {
+        // No attendance history at all yet — treat as clocked out.
+        return const LastClockStateLoaded(
+          status: LastClockStatus.clockedOut,
+          lastEventAt: null,
+          isDanglingOvernight: false,
+        );
+      }
+
+      final latest = rows.first as Map<String, dynamic>;
+      final type = latest['type'] as String;
+      final recordedAt = DateTime.parse(latest['recorded_at'] as String);
+
+      final status = type == 'clock_in' ? LastClockStatus.clockedIn : LastClockStatus.clockedOut;
+
+      final hoursSinceEvent = DateTime.now().toUtc().difference(recordedAt.toUtc()).inHours;
+      final isDangling = status == LastClockStatus.clockedIn && hoursSinceEvent >= 16;
+
+      return LastClockStateLoaded(
+        status: status,
+        lastEventAt: recordedAt,
+        isDanglingOvernight: isDangling,
+      );
+    } on PostgrestException catch (e) {
+      return LastClockStateError('Could not load attendance status: ${e.message}');
+    } catch (e) {
+      return LastClockStateError('Unexpected error loading attendance status: $e');
+    }
+  }
 
   Future<ClockResult> performClock(ClockEventType type) async {
     // 1. Get a fresh, high-accuracy GPS fix.

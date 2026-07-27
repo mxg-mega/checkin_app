@@ -8,46 +8,27 @@ final clockRepositoryProvider = Provider<ClockRepository>((ref) {
 });
 
 /// Tracks whether the user is currently clocked in, so the UI knows
-/// whether to show "Clock In" or "Clock Out". This should be refreshed
-/// from the latest attendance_records row on app start / after each clock event.
+/// whether to show "Clock In" or "Clock Out". Seeded from
+/// [initialClockStateProvider] on load, then updated locally after
+/// each successful clock action (no need to re-fetch from the server).
 enum ClockState { clockedIn, clockedOut, unknown }
 
-final currentClockStateProvider =
-    StateProvider<ClockState>((ref) => ClockState.unknown);
+final currentClockStateProvider = StateProvider<ClockState>((ref) => ClockState.unknown);
 
 /// True while a clock attempt (GPS fetch + Edge Function call) is in progress.
 final clockInProgressProvider = StateProvider<bool>((ref) => false);
 
-/// Represents the last-known state from the server at startup.
-enum LastClockStatus { clockedIn, clockedOut }
-
-sealed class LastClockState {
-  const LastClockState();
-}
-
-class LastClockStateLoaded extends LastClockState {
-  final LastClockStatus status;
-  final bool isDanglingOvernight;
-  final DateTime? lastEventAt;
-
-  const LastClockStateLoaded({
-    required this.status,
-    this.isDanglingOvernight = false,
-    this.lastEventAt,
-  });
-}
-
-class LastClockStateError extends LastClockState {
-  const LastClockStateError();
-}
-
-/// Initial provider that fetches the last-known clock state on startup.
-/// For now this returns a default (clockedOut) value so the UI compiles
-/// and runs; replace with a real fetch when available.
-final initialClockStateProvider = FutureProvider<LastClockState>((ref) async {
-  // TODO: call the backend / repository to determine the real last state.
-  return const LastClockStateLoaded(
-      status: LastClockStatus.clockedOut,
-      isDanglingOvernight: false,
-      lastEventAt: null);
+/// Fetches the user's last attendance record once on startup/resume, via
+/// ClockRepository.fetchLastClockState() — a real query against
+/// attendance_records, not a stub. The screen listens to this to seed
+/// [currentClockStateProvider] and to warn the user if they have a
+/// dangling (likely-forgotten) overnight shift.
+///
+/// autoDispose means this re-fetches fresh each time the screen mounts
+/// (e.g. app resumed from background), which is what fixes the "clocked
+/// in state not retained after leaving and returning" issue — the
+/// previous stub always returned clockedOut regardless of real state.
+final initialClockStateProvider = FutureProvider.autoDispose<LastClockStateResult>((ref) async {
+  final repository = ref.watch(clockRepositoryProvider);
+  return repository.fetchLastClockState();
 });

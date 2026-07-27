@@ -28,8 +28,6 @@ class AttendanceHistoryScreen extends ConsumerWidget {
       drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text('My Attendance'),
-        leading: IconButton(
-            onPressed: () => context.pop(), icon: const Icon(Icons.arrow_back)),
       ),
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(myAttendanceHistoryProvider),
