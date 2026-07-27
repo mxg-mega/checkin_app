@@ -38,7 +38,7 @@ class AdminDashboardScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            _SectionHeader(
+            const _SectionHeader(
               title: 'Dangling Shifts',
               subtitle: 'Clock-ins with no matching clock-out',
             ),
@@ -71,7 +71,7 @@ class AdminDashboardScreen extends ConsumerWidget {
             ),
 
             const SizedBox(height: 32),
-            _SectionHeader(
+            const _SectionHeader(
               title: 'Team Hours Standing',
               subtitle: 'This period · overtime owed vs hours to repay',
             ),

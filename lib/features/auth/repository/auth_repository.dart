@@ -74,8 +74,8 @@ class AuthRepository {
   Future<AuthResult> requestPasswordReset({required String email}) async {
     try {
       await SupabaseService.client.auth.resetPasswordForEmail(email.trim());
-      return AuthSuccess(SupabaseService.client.auth.currentUser ?? User(
-        id: '', appMetadata: const {}, userMetadata: const {}, aud: '', createdAt: '',
+      return AuthSuccess(SupabaseService.client.auth.currentUser ?? const User(
+        id: '', appMetadata: {}, userMetadata: {}, aud: '', createdAt: '',
       ));
     } on AuthException catch (e) {
       return AuthFailure(_friendlyAuthError(e));

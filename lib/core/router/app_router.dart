@@ -23,9 +23,11 @@ import '../../features/attendance/attendance_history_screen.dart';
 import '../../features/admin/screens/waive_backfill_screen.dart';
 import '../../features/admin/reports/reports_screen.dart';
 import '../../features/admin/office_locations/office_locations_screen.dart';
+import '../../features/dashboard/employee_dashboard_screen.dart';
 
 class AppRoutes {
   static const login = '/login';
+  static const employeeDashboard = '/dashboard';
   static const clock = '/clock';
   static const myAttendance = '/my-attendance';
   static const adminDashboard = '/admin';
@@ -81,13 +83,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           // dashboard access. Admins, however, are also employees who
           // clock in/out themselves, so they're free to use /clock and
           // /my-attendance too; only non-admins are restricted here.
-          if (!isAdmin && onAdminRoute) return AppRoutes.clock;
+          if (!isAdmin && onAdminRoute) return AppRoutes.employeeDashboard;
 
           // Redirect away from splash/login once we know where they belong.
           // Admins land on the dashboard by default after signing in, but
-          // can navigate to /clock afterward via the drawer.
+          // can navigate to /dashboard afterward via the drawer.
           if (onSplashOrLogin) {
-            return isAdmin ? AppRoutes.adminDashboard : AppRoutes.clock;
+            return isAdmin ? AppRoutes.adminDashboard : AppRoutes.employeeDashboard;
           }
 
           return null; // already on a valid route for this role
@@ -105,6 +107,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // --- Employee routes ---
+      GoRoute(
+        path: AppRoutes.employeeDashboard,
+        builder: (context, state) => const EmployeeDashboardScreen(),
+      ),
       GoRoute(
         path: AppRoutes.clock,
         builder: (context, state) => const ClockScreen(),

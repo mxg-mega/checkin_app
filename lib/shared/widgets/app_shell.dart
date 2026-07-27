@@ -44,6 +44,14 @@ class AppDrawer extends ConsumerWidget {
                 ),
                 if (!isAdmin) ...[
                   ListTile(
+                    leading: const Icon(Icons.dashboard_outlined),
+                    title: const Text('Dashboard'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.go(AppRoutes.employeeDashboard);
+                    },
+                  ),
+                  ListTile(
                     leading: const Icon(Icons.timer_outlined),
                     title: const Text('Clock In / Out'),
                     onTap: () {

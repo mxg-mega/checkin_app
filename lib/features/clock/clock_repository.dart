@@ -116,7 +116,7 @@ class ClockRepository {
         );
       }
 
-      final latest = rows.first as Map<String, dynamic>;
+      final latest = rows.first;
       final type = latest['type'] as String;
       final recordedAt = DateTime.parse(latest['recorded_at'] as String);
 
