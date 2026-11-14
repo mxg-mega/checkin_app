@@ -1,0 +1,32 @@
+#!/bin/bash
+# build_and_prepare_web.sh
+#
+# Builds the Flutter web app, syncs output to root web/,
+# and copies vercel.json for Vercel client-side routing.
+
+set -e  # stop immediately if any command fails
+
+echo "Building Flutter web app (release mode)..."
+flutter build web --release
+
+echo "Preparing root web/ directory..."
+# Create web/ directory if it doesn't exist
+mkdir -p web
+
+# Clear old build artifacts from web/ (excluding vercel.json if present)
+find web/ -mindepth 1 ! -name 'vercel.json' -delete
+
+# Copy all compiled web artifacts into root web/
+cp -r build/web/* web/
+
+echo "Copying vercel.json into web/..."
+if [ -f "build_web_vercel.json" ]; then
+    cp build_web_vercel.json web/vercel.json
+elif [ -f "vercel.json" ]; then
+    cp vercel.json web/vercel.json
+fi
+
+echo ""
+echo "Done. To deploy:"
+echo "  cd web"
+echo "  vercel --prod"

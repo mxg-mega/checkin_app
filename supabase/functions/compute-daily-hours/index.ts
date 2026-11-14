@@ -29,6 +29,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+export const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 interface RequestBody {
   user_id?: string;       // if omitted, recompute for all active users
   start_date: string;     // 'YYYY-MM-DD'
@@ -50,6 +55,10 @@ interface AdjustmentRow {
 }
 
 serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
   try {
     // --- Auth check: only allow service-role or admin-invoked calls ---
     const authHeader = req.headers.get("Authorization") ?? "";
@@ -235,6 +244,6 @@ function isScheduledWorkday(schedule: "team_a" | "team_b" | "full_week", dateStr
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }

@@ -12,6 +12,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+export const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 interface ClockRequest {
   type: "clock_in" | "clock_out";
   latitude: number;
@@ -19,6 +24,10 @@ interface ClockRequest {
 }
 
 serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
   try {
     // --- Identify the calling user from their JWT (passed through by Supabase) ---
     const authHeader = req.headers.get("Authorization");
@@ -147,6 +156,6 @@ function haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number)
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }
